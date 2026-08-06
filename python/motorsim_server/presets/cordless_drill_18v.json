@@ -1,0 +1,25 @@
+{
+  "name": "Cordless drill motor (18 V DC)",
+  "description": "High-current brushed drill motor. Huge inrush current on start; watch the current limiter fold the voltage back.",
+  "motor_type": "dc",
+  "params": {
+    "resistance": 0.09,
+    "inductance": 0.00012,
+    "torque_constant": 0.026,
+    "back_emf_constant": 0.026,
+    "inertia": 9e-05,
+    "viscous_friction": 4e-05,
+    "static_friction": 0.006,
+    "max_voltage": 18.0
+  },
+  "load": { "kind": "viscous", "params": { "coefficient": 8e-05 } },
+  "limits": { "current_limit": 60.0, "enabled": true },
+  "thermal": {
+    "ambient_c": 25.0,
+    "overheat_c": 130.0,
+    "thermal_resistance": 3.0,
+    "thermal_capacitance": 55.0,
+    "resistance_feedback": false
+  },
+  "drive": { "voltage": 18.0 }
+}

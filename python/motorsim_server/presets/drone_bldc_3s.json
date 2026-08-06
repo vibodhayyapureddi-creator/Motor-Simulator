@@ -1,0 +1,34 @@
+{
+  "name": "RC drone BLDC (3S, 900 kv)",
+  "description": "Small outrunner with a propeller attached. Fast electrical dynamics; use slow motion to see the commutation ripple.",
+  "motor_type": "bldc",
+  "params": {
+    "resistance": 0.11,
+    "inductance": 4.2e-05,
+    "torque_constant": 0.0106,
+    "back_emf_constant": 0.0106,
+    "inertia": 4e-06,
+    "viscous_friction": 1.5e-06,
+    "static_friction": 0.0004,
+    "max_voltage": 11.1,
+    "pole_pairs": 7,
+    "ripple_depth": 0.12
+  },
+  "load": { "kind": "fan", "params": { "coefficient": 1.4e-07 } },
+  "limits": { "current_limit": 30.0, "enabled": true },
+  "thermal": {
+    "ambient_c": 25.0,
+    "overheat_c": 110.0,
+    "thermal_resistance": 14.0,
+    "thermal_capacitance": 3.5,
+    "resistance_feedback": false
+  },
+  "battery": {
+    "capacity_ah": 1.5,
+    "internal_resistance": 0.03,
+    "nominal_voltage": 11.1,
+    "regen_limit": 20.0,
+    "soc": 1.0
+  },
+  "drive": { "voltage": 11.1 }
+}

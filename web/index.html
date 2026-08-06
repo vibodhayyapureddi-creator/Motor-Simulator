@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motor Test Bench</title>
+<link rel="stylesheet" href="/vendor/uPlot.min.css">
+<link rel="stylesheet" href="/src/styles.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "/vendor/three.module.js",
+    "three/addons/controls/OrbitControls.js": "/vendor/OrbitControls.js",
+    "three/addons/loaders/GLTFLoader.js": "/vendor/GLTFLoader.js",
+    "three/addons/environments/RoomEnvironment.js": "/vendor/RoomEnvironment.js",
+    "three/addons/utils/BufferGeometryUtils.js": "/vendor/utils/BufferGeometryUtils.js",
+    "/utils/BufferGeometryUtils.js": "/vendor/utils/BufferGeometryUtils.js",
+    "uplot": "/vendor/uPlot.esm.js"
+  }
+}
+</script>
+</head>
+<body>
+<header id="topbar">
+  <div class="brand">Motor Test Bench</div>
+  <div class="btn-group" id="bench-group" title="Which bench the controls address">
+    <button data-bench="A" class="active">A</button>
+    <button data-bench="B">B</button>
+  </div>
+  <label class="dual-toggle" title="Show both benches at once">
+    <input type="checkbox" id="dual-mode"> both
+  </label>
+  <select id="preset-select" title="Load a motor preset" aria-label="Motor preset"></select>
+  <button id="btn-diff" class="icon-btn" title="Compare two presets" aria-label="Compare two presets">Diff</button>
+  <div class="chips">
+    <span id="chip-backend" class="chip" title="Physics backend">—</span>
+    <span id="chip-rt" class="chip" title="Real-time factor">1.00× real time</span>
+    <span id="chip-conn" class="chip bad" title="Connection">Offline</span>
+  </div>
+  <div class="spacer"></div>
+  <div id="warning-lights" role="status" aria-live="polite" aria-label="Motor warnings"></div>
+  <button id="btn-theme" class="icon-btn" title="Toggle dark mode">Dark</button>
+  <button id="btn-tour" class="icon-btn" title="A short walkthrough of the app">Tour</button>
+  <button id="btn-mute" class="icon-btn" title="Toggle motor sound">Sound off</button>
+</header>
+
+<main id="layout">
+  <section id="scene-panel">
+    <canvas id="scene-canvas"></canvas>
+    <div id="scene-hud">
+      <span id="hud-rpm">0 RPM</span>
+      <span id="hud-note"></span>
+    </div>
+    <div id="annotations"></div>
+  </section>
+
+  <section id="dash-panel">
+    <div id="gauges"></div>
+  </section>
+
+  <section id="controls-panel" aria-label="Motor controls">
+    <nav id="tabs" role="tablist" aria-label="Control panels"></nav>
+    <div id="tab-bodies"></div>
+  </section>
+
+  <section id="charts-panel">
+    <div id="charts-toolbar">
+      <span class="charts-title">Telemetry</span>
+      <div class="btn-group" id="time-window-group">
+        <button data-win="5" class="active">5 s</button>
+        <button data-win="15">15 s</button>
+        <button data-win="60">60 s</button>
+      </div>
+      <label class="compare-toggle"><input type="checkbox" id="compare-mode"> compare recorded runs</label>
+    </div>
+    <div id="charts"></div>
+  </section>
+</main>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

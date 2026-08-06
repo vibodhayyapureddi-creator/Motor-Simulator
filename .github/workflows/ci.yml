@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # The test suite runs against the pure-Python fallback engine, so it
+  # needs no compiler and no third-party runtime dependencies.
+  tests:
+    name: Tests (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install test dependencies
+        run: python -m pip install --upgrade pip pytest
+
+      - name: Run tests
+        run: python -m pytest tests/python -q
+
+  # Build the C++ core and the standalone demo. No Python involved, so a
+  # break here is unambiguously an engine problem.
+  engine:
+    name: C++ engine (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S . -B build -DMOTORSIM_BUILD_DEMO=ON
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Run the demo (smoke test)
+        shell: bash
+        run: |
+          if [ -f build/demo/Release/motorsim_demo.exe ]; then
+            ./build/demo/Release/motorsim_demo.exe
+          else
+            ./build/demo/motorsim_demo
+          fi
+
+  # Build the pybind11 extension and confirm both backends agree, which
+  # is the property the fallback engine exists to guarantee.
+  bindings:
+    name: Python bindings
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install build dependencies
+        run: python -m pip install --upgrade pip pybind11 pytest
+
+      - name: Build motorsim_py
+        run: |
+          cmake -S . -B build -DMOTORSIM_BUILD_PYTHON_BINDINGS=ON \
+                -Dpybind11_DIR="$(python -m pybind11 --cmakedir)"
+          cmake --build build --config Release
+
+      - name: Confirm the compiled engine imports and is selected
+        working-directory: python
+        run: |
+          python -c "
+          from motorsim_app import engine_bridge
+          assert engine_bridge.is_using_cpp_backend(), engine_bridge.BACKEND_NAME
+          print('backend:', engine_bridge.BACKEND_NAME)
+          "
+
+      - name: Run the suite against the compiled engine
+        run: python -m pytest tests/python -q

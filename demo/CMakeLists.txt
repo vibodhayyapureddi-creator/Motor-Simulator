@@ -1,0 +1,2 @@
+add_executable(motorsim_demo cpp_demo_main.cpp)
+target_link_libraries(motorsim_demo PRIVATE motorsim_engine)

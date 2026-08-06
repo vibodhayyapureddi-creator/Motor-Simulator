@@ -1,0 +1,13 @@
+{
+  "name": "PWM ripple in slow motion",
+  "description": "Switch to PWM drive at 60% duty, then drop to 0.02x time so the chopped voltage and the current ripple it causes are visible.",
+  "steps": [
+    { "t": 0.0, "do": { "type": "reset" } },
+    { "t": 0.1, "do": { "type": "set_pwm", "enabled": true, "duty": 0.6, "frequency": 200 } },
+    { "t": 0.2, "do": { "type": "set_running", "on": true } },
+    { "t": 2.0, "do": { "type": "time", "scale": 0.02 } },
+    { "t": 2.12, "do": { "type": "time", "scale": 1.0 } },
+    { "t": 4.0, "do": { "type": "set_pwm", "enabled": false } },
+    { "t": 4.1, "do": { "type": "set_voltage", "value": 12 } }
+  ]
+}

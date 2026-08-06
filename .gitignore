@@ -1,0 +1,59 @@
+# ---------------------------------------------------------------- build tree
+# CMake configures into build/ and drops the compiled extension into python/.
+build/
+*.pyd
+*.so
+*.dylib
+*.obj
+*.lib
+*.exp
+*.pdb
+*.ilk
+
+# Build/setup transcripts. These record absolute paths from the machine
+# that produced them, so they are per-user noise, not source.
+setup_log.txt
+*.log
+
+# --------------------------------------------------------- generated output
+# Telemetry CSV/PNG written by run_examples.bat and the CLI. The curated
+# copies under examples/sample_output/ are committed on purpose; these are
+# throwaway reruns.
+output/
+
+# ------------------------------------------------------------ design notes
+# Internal planning documents. These are working notes about where the
+# project might go, not documentation of what it does, so they stay local.
+# docs/PROTOCOL.md is the exception: it documents the actual wire format
+# and is referenced from the README, so it ships.
+docs/*_PLAN.md
+
+# ------------------------------------------------------------ runtime state
+# Autosaved bench state and presets saved from the UI: local to one
+# installation, and regenerated on demand.
+python/motorsim_server/state/
+python/motorsim_server/presets/user/
+
+# ------------------------------------------------------------------ Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+.venv/
+venv/
+env/
+
+# ------------------------------------------------------- editors / tooling
+.vscode/
+.idea/
+*.swp
+*~
+.claude/
+
+# ------------------------------------------------------------ OS artefacts
+.DS_Store
+Thumbs.db
+desktop.ini

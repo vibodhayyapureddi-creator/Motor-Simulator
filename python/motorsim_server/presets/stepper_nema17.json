@@ -1,0 +1,29 @@
+{
+  "name": "NEMA 17 stepper",
+  "description": "Classic 1.8-degree hybrid stepper on a constant-current drive. Ramp the step rate and watch it lose steps past the pull-out torque.",
+  "motor_type": "stepper",
+  "params": {
+    "resistance": 1.4,
+    "inductance": 0.003,
+    "torque_constant": 0.05,
+    "back_emf_constant": 0.05,
+    "inertia": 5.7e-06,
+    "viscous_friction": 0.0001,
+    "static_friction": 0.001,
+    "max_voltage": 12.0,
+    "holding_torque": 0.4,
+    "step_angle_deg": 1.8,
+    "rated_current": 1.5,
+    "pullout_corner": 600.0
+  },
+  "load": { "kind": "none" },
+  "limits": { "current_limit": 4.0, "enabled": true },
+  "thermal": {
+    "ambient_c": 25.0,
+    "overheat_c": 100.0,
+    "thermal_resistance": 6.0,
+    "thermal_capacitance": 45.0,
+    "resistance_feedback": false
+  },
+  "drive": { "voltage": 12.0 }
+}

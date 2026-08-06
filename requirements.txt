@@ -1,0 +1,10 @@
+# Python dependencies for the Motor Simulation Program.
+#
+# Install with:  python -m pip install -r requirements.txt
+# (build.bat does this for you automatically.)
+
+pybind11>=2.13     # only needed to BUILD the C++ extension (motorsim_py)
+matplotlib>=3.5    # telemetry plots (RPM / torque / current vs. time)
+
+# Optional -- only needed to run the test suite (pytest tests/python):
+pytest>=7.0

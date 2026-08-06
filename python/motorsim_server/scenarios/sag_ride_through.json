@@ -1,0 +1,13 @@
+{
+  "name": "Voltage sag ride-through",
+  "description": "Drive a fan load, then hit the supply with two sags: a shallow dip it rides through and a deep one that nearly stops it.",
+  "steps": [
+    { "t": 0.0, "do": { "type": "reset" } },
+    { "t": 0.1, "do": { "type": "set_load", "kind": "fan", "params": { "coefficient": 2e-7 } } },
+    { "t": 0.2, "do": { "type": "set_voltage", "value": 12 } },
+    { "t": 0.3, "do": { "type": "set_running", "on": true } },
+    { "t": 3.0, "do": { "type": "fault", "kind": "sag", "depth": 0.3, "duration": 1.5 } },
+    { "t": 7.0, "do": { "type": "fault", "kind": "sag", "depth": 0.85, "duration": 2.0 } },
+    { "t": 12.0, "do": { "type": "fault", "kind": "clear" } }
+  ]
+}

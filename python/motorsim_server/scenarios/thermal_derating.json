@@ -1,0 +1,13 @@
+{
+  "name": "Thermal derating",
+  "description": "Heavy load with resistance feedback on: watch the winding heat up, resistance rise, and torque/speed sag as the motor derates.",
+  "steps": [
+    { "t": 0.0, "do": { "type": "reset" } },
+    { "t": 0.1, "do": { "type": "set_limits", "thermal_feedback": true, "overheat_c": 105 } },
+    { "t": 0.2, "do": { "type": "set_load", "kind": "constant", "params": { "torque": 0.025 } } },
+    { "t": 0.3, "do": { "type": "set_voltage", "value": 12 } },
+    { "t": 0.4, "do": { "type": "set_running", "on": true } },
+    { "t": 40.0, "do": { "type": "set_running", "on": false } },
+    { "t": 40.1, "do": { "type": "set_limits", "thermal_feedback": false } }
+  ]
+}

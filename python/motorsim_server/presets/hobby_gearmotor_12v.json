@@ -1,0 +1,25 @@
+{
+  "name": "12 V hobby gearmotor (DC)",
+  "description": "Small brushed gearmotor like an N20/370-class robot drive motor. Quick to spin up, easy to stall with the constant load.",
+  "motor_type": "dc",
+  "params": {
+    "resistance": 2.4,
+    "inductance": 0.0032,
+    "torque_constant": 0.0135,
+    "back_emf_constant": 0.0135,
+    "inertia": 6e-06,
+    "viscous_friction": 3e-06,
+    "static_friction": 0.0008,
+    "max_voltage": 12.0
+  },
+  "load": { "kind": "constant", "params": { "torque": 0.004 } },
+  "limits": { "current_limit": 4.0, "enabled": true },
+  "thermal": {
+    "ambient_c": 25.0,
+    "overheat_c": 105.0,
+    "thermal_resistance": 22.0,
+    "thermal_capacitance": 6.0,
+    "resistance_feedback": false
+  },
+  "drive": { "voltage": 12.0 }
+}

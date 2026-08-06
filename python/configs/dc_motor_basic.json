@@ -1,0 +1,24 @@
+{
+  "name": "DC Motor - Spin-up then Load Step",
+  "motor_type": "dc",
+  "params": {
+    "resistance": 1.2,
+    "inductance": 0.0006,
+    "torque_constant": 0.06,
+    "back_emf_constant": 0.06,
+    "inertia": 0.00035,
+    "viscous_friction": 0.00008,
+    "static_friction": 0.002,
+    "max_voltage": 12.0
+  },
+  "dt": 0.00005,
+  "segments": [
+    { "duration": 0.3, "voltage": 12.0, "load_torque": 0.01 },
+    { "duration": 0.3, "voltage": 12.0, "load_torque": 0.05 },
+    { "duration": 0.2, "voltage": 0.0,  "load_torque": 0.0  }
+  ],
+  "output": {
+    "csv": "dc_motor_basic_output.csv",
+    "plot": "dc_motor_basic_plot.png"
+  }
+}

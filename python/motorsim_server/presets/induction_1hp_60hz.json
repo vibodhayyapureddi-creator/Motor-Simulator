@@ -1,0 +1,30 @@
+{
+  "name": "1 hp induction motor (230 V, 60 Hz)",
+  "description": "Squirrel-cage induction machine on a V/Hz drive. It always runs a little below synchronous speed - load it up and watch the slip grow.",
+  "motor_type": "induction",
+  "params": {
+    "resistance": 2.0,
+    "inductance": 0.02,
+    "torque_constant": 0.5,
+    "back_emf_constant": 0.5,
+    "inertia": 0.004,
+    "viscous_friction": 0.001,
+    "static_friction": 0.02,
+    "max_voltage": 230.0,
+    "pole_pairs": 2,
+    "breakdown_torque": 12.0,
+    "breakdown_slip": 0.2,
+    "magnetizing_current": 3.0,
+    "rated_frequency": 60.0
+  },
+  "load": { "kind": "constant", "params": { "torque": 2.0 } },
+  "limits": { "current_limit": 15.0, "enabled": true },
+  "thermal": {
+    "ambient_c": 25.0,
+    "overheat_c": 130.0,
+    "thermal_resistance": 1.2,
+    "thermal_capacitance": 900.0,
+    "resistance_feedback": false
+  },
+  "drive": { "voltage": 230.0 }
+}

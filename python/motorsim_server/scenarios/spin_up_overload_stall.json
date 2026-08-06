@@ -1,0 +1,15 @@
+{
+  "name": "Spin-up, overload, stall",
+  "description": "Start unloaded, add load in steps until the motor stalls, then recover. Best with the 12 V hobby gearmotor preset.",
+  "steps": [
+    { "t": 0.0, "do": { "type": "reset" } },
+    { "t": 0.1, "do": { "type": "set_load", "kind": "none" } },
+    { "t": 0.2, "do": { "type": "set_voltage", "value": 12 } },
+    { "t": 0.3, "do": { "type": "set_running", "on": true } },
+    { "t": 2.5, "do": { "type": "set_load", "kind": "constant", "params": { "torque": 0.01 } } },
+    { "t": 5.0, "do": { "type": "set_load", "kind": "constant", "params": { "torque": 0.03 } } },
+    { "t": 7.5, "do": { "type": "fault", "kind": "jam", "on": true } },
+    { "t": 11.0, "do": { "type": "fault", "kind": "clear" } },
+    { "t": 11.1, "do": { "type": "set_load", "kind": "constant", "params": { "torque": 0.004 } } }
+  ]
+}

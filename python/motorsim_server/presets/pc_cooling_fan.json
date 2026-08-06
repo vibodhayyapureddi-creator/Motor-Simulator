@@ -1,0 +1,27 @@
+{
+  "name": "PC cooling fan BLDC (12 V)",
+  "description": "Gentle little 120 mm case fan. Low currents, aerodynamic load, tops out around 2500 RPM.",
+  "motor_type": "bldc",
+  "params": {
+    "resistance": 6.5,
+    "inductance": 0.0045,
+    "torque_constant": 0.043,
+    "back_emf_constant": 0.043,
+    "inertia": 2.5e-06,
+    "viscous_friction": 2e-06,
+    "static_friction": 0.0003,
+    "max_voltage": 12.0,
+    "pole_pairs": 2,
+    "ripple_depth": 0.08
+  },
+  "load": { "kind": "fan", "params": { "coefficient": 1e-07 } },
+  "limits": { "current_limit": 1.0, "enabled": true },
+  "thermal": {
+    "ambient_c": 25.0,
+    "overheat_c": 90.0,
+    "thermal_resistance": 40.0,
+    "thermal_capacitance": 4.0,
+    "resistance_feedback": false
+  },
+  "drive": { "voltage": 12.0 }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "BLDC Motor - Spin-up under Moderate Load",
+  "motor_type": "bldc",
+  "params": {
+    "resistance": 0.8,
+    "inductance": 0.0004,
+    "torque_constant": 0.045,
+    "back_emf_constant": 0.045,
+    "inertia": 0.00025,
+    "viscous_friction": 0.00006,
+    "static_friction": 0.001,
+    "max_voltage": 24.0,
+    "pole_pairs": 7,
+    "ripple_depth": 0.08
+  },
+  "dt": 0.00005,
+  "segments": [
+    { "duration": 0.3, "voltage": 18.0, "load_torque": 0.02 },
+    { "duration": 0.2, "voltage": 24.0, "load_torque": 0.08 }
+  ],
+  "output": {
+    "csv": "bldc_motor_basic_output.csv",
+    "plot": "bldc_motor_basic_plot.png"
+  }
+}

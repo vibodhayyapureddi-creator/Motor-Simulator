@@ -1,0 +1,39 @@
+# Normalise line endings so a repo authored on Windows stays sane for
+# everyone else. Git stores LF; working copies get the platform default.
+* text=auto
+
+# Windows-only launchers must keep CRLF, or cmd.exe mis-parses them.
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Shell scripts must keep LF, or the shebang breaks on Unix.
+*.sh    text eol=lf
+
+# Explicit text types (keeps diffs readable regardless of detection).
+*.py    text
+*.js    text
+*.css   text
+*.html  text
+*.json  text
+*.md    text
+*.h     text
+*.cpp   text
+*.ino   text
+*.txt   text
+*.csv   text
+*.yml   text
+
+# Binary: never touch these, and don't try to diff them.
+*.glb   binary
+*.png   binary
+*.jpg   binary
+*.ico   binary
+*.pyd   binary
+*.so    binary
+*.dll   binary
+*.lib   binary
+
+# Vendored dependencies: keep them out of language stats and collapse
+# them in pull-request diffs.
+web/vendor/** linguist-vendored
