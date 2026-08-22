@@ -1,0 +1,36 @@
+# Keep the build context small and free of local artefacts.
+.git/
+.github/
+.claude/
+
+# Build trees and compiled output. The image builds the extension itself,
+# and a host-built .pyd/.so would be the wrong platform anyway.
+build/
+*.pyd
+*.so
+output/
+
+# Local runtime state and saved presets.
+python/motorsim_server/state/
+python/motorsim_server/presets/user/
+
+# Caches and tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Not needed at runtime
+docs/
+tests/
+examples/
+demo/
+tools/
+*.bat
+*.ps1
+*.md
+.gitignore
+.gitattributes

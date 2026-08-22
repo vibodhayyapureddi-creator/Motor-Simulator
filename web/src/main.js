@@ -26,8 +26,30 @@ import { MotorSound } from "./audio/sound.js";
 import { Annotations, Tour } from "./ui/annotations.js";
 import { PresetDiff } from "./ui/presetDiff.js";
 
-// multi-tenant room: ?room=name isolates your benches from everyone else's
-const ROOM = new URLSearchParams(location.search).get("room") || "main";
+// Multi-tenant room: ?room=name isolates your benches from everyone else's.
+//
+// Deployed, every visitor needs their own room, or two people opening the
+// same link would drive the same motor and fight over it. So when no room
+// is given we mint one and put it in the URL, which also makes the URL
+// shareable (send it to someone and they watch your bench) and stable
+// across refreshes.
+//
+// Locally we stay on "main", so the server's autosave still restores the
+// bench you left running.
+const LOCAL_HOSTS = ["localhost", "127.0.0.1", "::1", ""];
+
+function resolveRoom() {
+  const asked = new URLSearchParams(location.search).get("room");
+  if (asked) return asked;
+  if (LOCAL_HOSTS.includes(location.hostname)) return "main";
+  const minted = "r" + Math.random().toString(36).slice(2, 10);
+  const url = new URL(location.href);
+  url.searchParams.set("room", minted);
+  history.replaceState(null, "", url);
+  return minted;
+}
+
+const ROOM = resolveRoom();
 const roomQS = ROOM === "main" ? (p) => p
   : (p) => p + (p.includes("?") ? "&" : "?") + "room=" + encodeURIComponent(ROOM);
 
@@ -56,7 +78,7 @@ panels.roomQS = roomQS;
 if (ROOM !== "main") {
   const chip = document.createElement("span");
   chip.className = "chip good";
-  chip.title = "Isolated room — benches here are private to this URL";
+  chip.title = "Private room. This URL is yours; share it to let someone watch.";
   chip.textContent = `room: ${ROOM}`;
   document.querySelector(".chips").prepend(chip);
 }
