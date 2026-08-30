@@ -236,3 +236,43 @@ def test_recorder_names_deduplicate():
     b = rec.start("run")
     rec.stop()
     assert a == "run" and b == "run-2"
+
+
+# ------------------------------------------------------- idle CPU behaviour
+
+def test_unwatched_bench_does_not_step():
+    """An unwatched bench must not burn CPU simulating into the void.
+
+    The loop is greedy by design (it chases wall-clock time), so two idle
+    benches can saturate a small container and starve the web server that
+    serves the page. Regression: a deployed instance spent all its CPU
+    stepping two benches nobody was connected to.
+    """
+    s = make_session()
+    assert not s._watched()          # no listeners, not recording
+
+
+def test_bench_is_watched_when_a_client_listens():
+    s = make_session()
+    sink = lambda _msg: None
+    s.add_listener(sink)
+    assert s._watched()
+    s.remove_listener(sink)
+    assert not s._watched()
+
+
+def test_recording_keeps_an_unwatched_bench_alive():
+    """A run recorded from a script must not stop when the tab closes."""
+    rec = Recorder()
+    s = SimulationSession(rec)
+    assert not s._watched()
+    rec.start("headless")
+    assert s._watched()
+    rec.stop()
+    assert not s._watched()
+
+
+def test_cpu_budget_is_bounded():
+    """The knob must stay in a sane range whatever the environment says."""
+    from motorsim_server.session import CPU_BUDGET
+    assert 0.02 <= CPU_BUDGET <= 0.9

@@ -37,8 +37,15 @@ COPY python/ python/
 COPY web/ web/
 COPY --from=build /src/python/motorsim_py*.so python/
 
+# MOTORSIM_CPU_BUDGET caps the share of each tick a bench may spend
+# stepping the engine. The loop is greedy by default (0.75), which is
+# right on a desktop and fatal on a small shared container: two benches
+# eat the entire CPU slice, starve the web server, and the platform proxy
+# starts dropping requests before they ever reach the app. The real-time
+# factor shown in the UI is the honest readout of this trade.
 ENV PYTHONUNBUFFERED=1 \
-    PORT=8000
+    PORT=8000 \
+    MOTORSIM_CPU_BUDGET=0.15
 
 EXPOSE 8000
 WORKDIR /app/python

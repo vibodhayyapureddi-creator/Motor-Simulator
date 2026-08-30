@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import collections
 import math
+import os
 import threading
 import time
 from typing import Callable, Dict, List, Optional
@@ -29,6 +30,18 @@ from .loads import LoadModel, make_load
 from .recording import Recorder
 
 TICK_SECONDS = 1.0 / 60.0            # target telemetry / input cadence
+
+# Fraction of each tick a bench may spend stepping the engine. The loop is
+# otherwise greedy: it always tries to catch up to wall-clock time, so one
+# bench happily eats ~90% of a core and two eat more than a small machine
+# has. That starves the web server itself, and requests start failing
+# before they ever reach the app. Lower it (MOTORSIM_CPU_BUDGET=0.15) to
+# trade simulation speed for a responsive server; the real-time factor
+# already shown in the UI is the honest readout of that trade.
+CPU_BUDGET = max(0.02, min(0.9, float(os.environ.get("MOTORSIM_CPU_BUDGET", 0.75))))
+
+# How often an unwatched bench wakes just to stay responsive to commands.
+IDLE_TICK_SECONDS = 0.5
 SUBSTEP_CPP = 5e-5                   # engine sub-step on the C++ backend (s)
 SUBSTEP_FALLBACK = 2e-4              # coarser on pure Python; RK4 stays stable
 MAX_CATCHUP_SIM_S = 0.25             # per-tick catch-up cap (sim seconds)
@@ -134,6 +147,20 @@ class SimulationSession:
         with self._listeners_lock:
             if fn in self._listeners:
                 self._listeners.remove(fn)
+
+    def _watched(self) -> bool:
+        """Is this bench worth spending CPU on right now?
+
+        With nobody connected there is no one to send telemetry to, so
+        stepping the engine is pure waste. It is not free waste either:
+        the loop is greedy by design, so two idle benches can saturate a
+        small container and starve the web server that serves the page.
+        Recording keeps a bench alive even with no viewers.
+        """
+        with self._listeners_lock:
+            if self._listeners:
+                return True
+        return self.recorder.recording is not None
 
     def _emit(self, message: dict) -> None:
         with self._listeners_lock:
@@ -624,6 +651,15 @@ class SimulationSession:
                                 "name": self._scenario_name, "bench": self.name})
                     self._scenario = None
 
+            # Nobody watching: idle cheaply instead of simulating into the
+            # void. Commands are still drained above, so a bench resumes
+            # instantly when someone connects.
+            if not self._watched():
+                self._accumulator = 0.0
+                self._stop.wait(IDLE_TICK_SECONDS)
+                last = time.monotonic()
+                continue
+
             budget = 0.0
             if not self.paused and not self.numeric_fault:
                 budget = elapsed * self.time_scale
@@ -664,7 +700,7 @@ class SimulationSession:
 
         ke = self.motor.params["back_emf_constant"]
         ctrl_every = max(1, int(round(0.001 / dt)))   # ~1 kHz control rate
-        deadline = time.monotonic() + 0.75 * TICK_SECONDS
+        deadline = time.monotonic() + CPU_BUDGET * TICK_SECONDS
         mtype = self.motor.motor_type
         # motor-type-specific drive inputs (constant across one tick)
         if mtype == "stepper":
