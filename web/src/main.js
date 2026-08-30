@@ -45,7 +45,7 @@ function resolveRoom() {
   const minted = "r" + Math.random().toString(36).slice(2, 10);
   const url = new URL(location.href);
   url.searchParams.set("room", minted);
-  history.replaceState(null, "", url);
+  window.history.replaceState(null, "", url);
   return minted;
 }
 
@@ -517,7 +517,7 @@ if (location.hash.startsWith("#s=")) {
   try {
     pendingShared = JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(3)))));
   } catch { /* malformed hash: ignore */ }
-  history.replaceState(null, "", location.pathname);
+  window.history.replaceState(null, "", location.pathname);
 }
 
 // ------------------------------------------------------------------ presets
