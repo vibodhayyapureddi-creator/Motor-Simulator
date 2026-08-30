@@ -28,7 +28,7 @@ from motorsim_server.presets_service import (
 )
 from motorsim_server.recording import Recorder, _safe_name
 from motorsim_server.security import (
-    check_request, is_trusted_host, origin_host, split_host,
+    check_request, is_trusted_host, normalise_allowed, origin_host, split_host,
 )
 
 
@@ -406,6 +406,27 @@ def test_entry_point_accepts_its_own_flags():
     assert "allowed_hosts" in inspect.signature(create_server).parameters
     src = inspect.getsource(main)
     assert "--allow-host" in src and "allowed_hosts=" in src
+
+
+def test_blank_allow_host_entries_are_ignored():
+    """The container passes two --allow-host values and one is normally
+    empty (RENDER_EXTERNAL_HOSTNAME on Render, ALLOW_HOST elsewhere), so a
+    blank entry must be dropped rather than trusted or crashing."""
+    site = "motorsim.onrender.com"
+    assert check_request(site, "https://" + site, allowed=[site, ""]) is None
+    assert check_request(site, "https://" + site, allowed=["", site]) is None
+    # and an all-blank list must still refuse, not silently allow everything
+    assert check_request(site, "https://" + site, allowed=["", ""]) is not None
+    assert normalise_allowed(["", "  ", site]) == {site}
+
+
+def test_allow_host_rejects_url_form():
+    """A full URL in ALLOW_HOST parses to its scheme, not its host, so the
+    site would 403. Pin the behaviour so the failure is at least honest."""
+    site = "motorsim.onrender.com"
+    assert normalise_allowed(["https://" + site]) == {"https"}
+    assert check_request(site, "https://" + site,
+                         allowed=["https://" + site]) is not None
 
 
 def test_ip_literals_are_trusted_but_names_are_not():

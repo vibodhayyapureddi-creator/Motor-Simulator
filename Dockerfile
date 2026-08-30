@@ -38,22 +38,30 @@ COPY web/ web/
 COPY --from=build /src/python/motorsim_py*.so python/
 
 ENV PYTHONUNBUFFERED=1 \
-    PORT=8000 \
-    ALLOW_HOST=localhost
+    PORT=8000
 
 EXPOSE 8000
 WORKDIR /app/python
 
-# Shell form on purpose, so $PORT and $ALLOW_HOST expand at start-up.
+# Shell form on purpose, so the variables expand at start-up.
 #
 #   --host 0.0.0.0   the container must accept traffic from the platform
-#   --allow-host     the Host guard refuses unknown host names (that is
-#                    what blocks DNS rebinding), so the public hostname
-#                    has to be named explicitly or every request 403s
+#   --allow-host     the Host guard refuses unknown host names, which is
+#                    what blocks DNS rebinding. The public hostname has to
+#                    be named explicitly or every request 403s.
 #   --no-restore     autosave is a local convenience; restoring one shared
 #                    bench for every visitor would leak state between them
+#
+# Two sources for the hostname, both optional and either may be empty
+# (blank entries are ignored by the guard):
+#
+#   RENDER_EXTERNAL_HOSTNAME  set automatically by Render, so a Render
+#                             deploy needs no configuration at all
+#   ALLOW_HOST                set it yourself on any other host, or to add
+#                             a custom domain alongside the default one
 CMD python -m motorsim_server \
       --host 0.0.0.0 \
       --port "$PORT" \
+      --allow-host "$RENDER_EXTERNAL_HOSTNAME" \
       --allow-host "$ALLOW_HOST" \
       --no-restore
