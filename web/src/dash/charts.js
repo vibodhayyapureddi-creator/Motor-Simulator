@@ -184,7 +184,7 @@ export class Charts {
         opts.series = [
           { label: "t (s)" },
           ...this.compareRuns.map((run, i) => ({
-            label: `${def.label} — ${run.name}`,
+            label: `${def.label}: ${run.name}`,
             stroke: OVERLAY_COLORS[i % OVERLAY_COLORS.length],
             width: 1.5, points: { show: false },
           })),

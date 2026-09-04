@@ -57,3 +57,28 @@ env/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ------------------------------------------------------- secrets / keys
+# Nothing in this project currently needs a credential: every environment
+# variable it reads (PORT, ALLOW_HOST, MOTORSIM_CPU_BUDGET) is ordinary
+# config, not a secret. These patterns exist so that if that ever changes,
+# or a key is copied here while debugging a deploy, it cannot be committed
+# by accident.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+*_rsa
+secrets.json
+credentials.json
+*.tfvars
+
+# Server-side deployment artefacts. The Caddyfile can carry a basic_auth
+# password hash, and the deploy log records commit history and paths.
+Caddyfile
+deploy.log

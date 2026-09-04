@@ -1,0 +1,18 @@
+# Motor Simulator - https://motorsimulator.app/
+
+User-agent: *
+Allow: /
+
+# Every visitor is assigned a private ?room=, so these URLs are unbounded
+# in number and all render the same page. Keeping crawlers out of them
+# avoids wasting crawl budget on duplicates; the canonical tag in
+# index.html points at the bare URL.
+Disallow: /*?room=
+
+# Nothing here is useful to a crawler: live telemetry, the WebSocket, and
+# vendored third-party libraries.
+Disallow: /api/
+Disallow: /ws
+Disallow: /vendor/
+
+Sitemap: https://motorsimulator.app/sitemap.xml

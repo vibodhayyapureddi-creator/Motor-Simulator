@@ -59,7 +59,16 @@ body {
   border-bottom: 1px solid var(--edge);
   flex: 0 0 auto;
 }
-.brand { font-weight: 600; white-space: nowrap; }
+.brand {
+  font-weight: 600; white-space: nowrap;
+  display: flex; align-items: baseline; gap: 8px;
+}
+/* Byline sits beside the title, quieter than it. Hidden on narrow screens
+   where the header has to fight for room. */
+.brand .byline {
+  font-weight: 400; font-size: 11.5px; color: var(--muted);
+}
+@media (max-width: 1100px) { .brand .byline { display: none; } }
 .spacer { flex: 1; }
 .chips { display: flex; gap: 10px; }
 .chip {
@@ -157,16 +166,37 @@ body {
   border-bottom: 2px solid transparent;
 }
 #tabs button.active { color: var(--text); font-weight: 600; border-bottom-color: var(--text); }
-#tab-bodies { flex: 1; overflow-y: auto; padding: 14px; min-height: 0; }
+/* overflow-x hidden: nothing in a control panel should ever scroll
+   sideways. The rules below make every row shrink to fit instead. */
+#tab-bodies { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 14px;
+              min-height: 0; }
 .tab-body { display: none; flex-direction: column; gap: 12px; }
 .tab-body.active { display: flex; }
 
-.ctl-row { display: flex; align-items: center; gap: 8px; }
-.ctl-row label { flex: 0 0 108px; font-size: 12.5px; color: var(--muted); }
-.ctl-row input[type=range] { flex: 1; accent-color: var(--accent); }
-.ctl-row .val { flex: 0 0 64px; text-align: right; font-variant-numeric: tabular-nums; font-size: 12.5px; }
+/* wrap: when a control genuinely needs more room than the space left
+   beside its label (the 4-way motor-type picker, the speed presets), it
+   drops to its own full-width line instead of being clipped by the
+   panel's overflow:hidden. */
+.ctl-row { display: flex; align-items: center; gap: 8px 10px; min-width: 0;
+           flex-wrap: wrap; }
+/* Labels and readouts may shrink; the label ellipsises rather than
+   pushing the row wider than the panel. */
+.ctl-row label {
+  flex: 0 1 96px; min-width: 0; font-size: 12.5px; color: var(--muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* min-width:0 is the important one. A range input has an intrinsic width
+   of ~129px, and a flex item will not shrink below its content size
+   unless min-width is cleared -- which is what made this row 321px wide
+   inside a 298px panel and produced a horizontal scrollbar. */
+.ctl-row input[type=range] { flex: 1 1 40px; min-width: 0; accent-color: var(--accent); }
+.ctl-row .val {
+  flex: 0 1 58px; min-width: 0; text-align: right;
+  font-variant-numeric: tabular-nums; font-size: 12.5px; white-space: nowrap;
+}
 
-.ctl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ctl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; min-width: 0; }
+.ctl-grid > * { min-width: 0; }
 .ctl-field { display: flex; flex-direction: column; gap: 3px; }
 .ctl-field label { font-size: 12px; color: var(--muted); }
 .ctl-field input, .ctl-field select {
@@ -192,12 +222,23 @@ button.action.armed   { color: var(--accent); border-color: var(--accent); backg
 .btn-row { display: flex; gap: 8px; }
 .btn-row > * { flex: 1; }
 
-.btn-group { display: inline-flex; border: 1px solid var(--edge); border-radius: 6px; overflow: hidden; }
+/* A button group must be able to shrink. Left at its intrinsic width it
+   overflows the 298px panel and gets cut off at the right edge. */
+.btn-group {
+  display: inline-flex; border: 1px solid var(--edge); border-radius: 6px;
+  overflow: hidden; flex: 0 1 auto; min-width: 0; max-width: 100%;
+}
 .btn-group button {
+  flex: 0 1 auto; min-width: 0; white-space: nowrap;
   background: var(--panel); border: none; color: var(--muted);
   padding: 5px 12px; cursor: pointer; font-size: 12.5px; font-family: inherit;
 }
 .btn-group button + button { border-left: 1px solid var(--edge); }
+/* Inside the narrow control panel a group should fill its row so the
+   labels stay legible. Elsewhere (the chart toolbar) it keeps its natural
+   width instead of stretching across the page. */
+#tab-bodies .btn-group { flex: 1 1 auto; }
+#tab-bodies .btn-group button { flex: 1 1 auto; padding: 5px 6px; }
 .btn-group button.active { background: var(--panel-2); color: var(--text); font-weight: 600; }
 
 .section-title {

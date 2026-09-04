@@ -25,7 +25,7 @@ function rowsFor(a, b) {
   return keys.map(k => ({ key: k, a: fa[k], b: fb[k], differs: fa[k] !== fb[k] }));
 }
 
-const show = v => v === undefined ? "—" : String(v);
+const show = v => v === undefined ? "-" : String(v);
 
 export class PresetDiff {
   constructor(button, getPresets) {

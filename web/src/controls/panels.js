@@ -14,7 +14,7 @@ const PARAM_DEFS = [
   { key: "static_friction",   label: "T_fric (N·m)", step: 0.001 },
   { key: "max_voltage",       label: "V max (V)",    step: 1 },
   { key: "pole_pairs",        label: "Pole pairs",   step: 1, only: ["bldc", "induction"] },
-  { key: "ripple_depth",      label: "Ripple 0–1",   step: 0.01, only: ["bldc"] },
+  { key: "ripple_depth",      label: "Ripple 0-1",   step: 0.01, only: ["bldc"] },
   { key: "holding_torque",    label: "Hold τ (N·m)", step: 0.05, only: ["stepper"] },
   { key: "step_angle_deg",    label: "Step (°)",     step: 0.45, only: ["stepper"] },
   { key: "rated_current",     label: "I rated (A)",  step: 0.1, only: ["stepper"] },
@@ -245,15 +245,15 @@ export class ControlPanels {
       if (steps.length) {
         this.scriptText.value = JSON.stringify(steps, null, 2);
         this.setScenarioStatus(
-          `Captured ${steps.length} step${steps.length > 1 ? "s" : ""} — edit and press Run.`);
+          `Captured ${steps.length} step${steps.length > 1 ? "s" : ""}. Edit it, then press Run.`);
       } else {
-        this.setScenarioStatus("Nothing captured — drive the motor while recording.");
+        this.setScenarioStatus("Nothing captured. Drive the motor while the recorder is running.");
       }
     } else {
       this._macro = { t0: this.lastT, steps: [] };
       this.btnMacro.textContent = "Stop capturing";
       this.btnMacro.classList.add("armed");
-      this.setScenarioStatus("Capturing your actions as scenario steps…");
+      this.setScenarioStatus("Capturing your actions as scenario steps");
     }
   }
 
@@ -402,7 +402,7 @@ export class ControlPanels {
     b.appendChild(grid);
     b.appendChild(el("p", "hint",
       "Edits apply instantly to the running motor (the session hot-swaps " +
-      "to the mutable backend when needed — the 'engine' chip shows which)."));
+      "to the mutable backend when needed. The engine chip shows which is active)."));
 
     const actions = el("div", "btn-row");
     const btnReset = el("button", "action", "Reset motor");
@@ -482,7 +482,7 @@ export class ControlPanels {
     b.appendChild(this.loadParamsBox);
     b.appendChild(el("p", "hint",
       "Fan/pump torque grows with speed²; wheel and flywheel also add " +
-      "reflected inertia — engaging one on a spinning shaft visibly drops " +
+      "reflected inertia, so engaging one on a spinning shaft visibly drops " +
       "the RPM (conservation of angular momentum)."));
     this.loadInputs = {};
     this._renderLoadParams("none", {});
@@ -536,11 +536,11 @@ export class ControlPanels {
     this.pidKi = numField(grid, "Ki", 0.05, 0.005, () => this._sendController());
     this.pidKd = numField(grid, "Kd", 0, 0.0005, () => this._sendController());
     b.appendChild(grid);
-    this.pidStatus = el("p", "hint", "Controller off — the throttle is open-loop.");
+    this.pidStatus = el("p", "hint", "Controller off. The throttle is open-loop.");
     b.appendChild(this.pidStatus);
     b.appendChild(el("p", "hint",
       "Setpoint units: RPM (speed), N·m (torque), revolutions (position). " +
-      "While active, the controller owns the drive voltage (or PWM duty) — " +
+      "While active, the controller owns the drive voltage or PWM duty, so " +
       "the throttle slider follows it. Ki removes steady-state error; too " +
       "much Kp overshoots. Start/stop still applies."));
 
@@ -548,14 +548,14 @@ export class ControlPanels {
     const stepRow = el("div", "btn-row");
     const btnStep = el("button", "action", "Step +25% and measure");
     btnStep.addEventListener("click", async () => {
-      this.stepResult.textContent = "Measuring (3 s)…";
+      this.stepResult.textContent = "Measuring, 3 s";
       this.stepResult.textContent = await this.onStepTest();
     });
     const btnTune = el("button", "action", "Auto-tune");
     btnTune.title = "Measure the motor's gain and time constant with a " +
                     "voltage step, then compute PI gains (IMC method)";
     btnTune.addEventListener("click", async () => {
-      this.stepResult.textContent = "Identifying the plant (≈3 s)…";
+      this.stepResult.textContent = "Identifying the plant, about 3 s";
       this.stepResult.textContent = await this.onAutoTune();
     });
     stepRow.append(btnStep, btnTune);
@@ -653,7 +653,7 @@ export class ControlPanels {
     b.appendChild(fbRow);
     b.appendChild(el("p", "hint",
       "Copper derating: with feedback on, a hot winding raises R, which " +
-      "cuts torque and current — watch the motor sag as it cooks."));
+      "cuts torque and current, and the motor slows as it heats."));
 
     b.appendChild(el("p", "section-title", "Power source"));
     const battRow = el("div", "ctl-row");
@@ -716,8 +716,8 @@ export class ControlPanels {
     this._renderScales([1.0, 0.25, 0.1, 0.02]);
 
     b.appendChild(el("p", "hint",
-      "Electrical transients are over in milliseconds at 1× — drop to " +
-      "0.1× or 0.02× to actually watch the inrush spike and BLDC " +
+      "Electrical transients are over in milliseconds at 1x. Drop to " +
+      "0.1x or 0.02x to see the inrush spike and BLDC " +
       "commutation ripple, or single-step through them."));
   }
 
@@ -766,7 +766,7 @@ export class ControlPanels {
     this.scriptText.spellcheck = false;
     b.appendChild(this.scriptText);
     b.appendChild(el("p", "hint",
-      "Each step is { \"t\": seconds, \"do\": <command> } — any command the " +
+      "Each step is { \"t\": seconds, \"do\": <command> }, using any command the " +
       "panels can send (set_voltage, set_load, fault, time, set_pwm, ...). " +
       "Times run on simulation time, so pause and slow-motion hold the " +
       "script too. Edit freely and press Run."));
@@ -981,7 +981,7 @@ export class ControlPanels {
     b.appendChild(hwRow);
     this.hwStatus = el("p", "hint",
       "Stream live telemetry from a real motor (Arduino/ESC over USB) and " +
-      "overlay it as the “hardware-live” run in compare mode. Needs " +
+      "overlay it as the 'hardware-live' run in compare mode. Needs " +
       "pyserial on the server; see tools/hil_arduino_example.");
     b.appendChild(this.hwStatus);
 
@@ -990,8 +990,8 @@ export class ControlPanels {
     this.runsList.id = "runs-list";
     b.appendChild(this.runsList);
     b.appendChild(el("p", "hint",
-      "Tick runs to overlay them on the charts (enable “compare recorded " +
-      "runs” in the chart toolbar). CSV downloads match the batch CLI's " +
+      "Tick runs to overlay them on the charts (enable 'compare recorded " +
+      "runs' in the chart toolbar). CSV downloads match the batch CLI's " +
       "column format plus temperature and fault flags."));
   }
 
@@ -1001,8 +1001,8 @@ export class ControlPanels {
       const frames = parseCsvLog(reader.result);
       if (!frames) {
         this.runsList.prepend(el("p", "hint",
-          "Could not read that CSV — it needs a header row with a 't' " +
-          "column plus telemetry columns (rpm, current, torque, …)."));
+          "Could not read that CSV. It needs a header row with a 't' " +
+          "column plus telemetry columns (rpm, current, torque and so on)."));
         return;
       }
       let name = file.name.replace(/\.csv$/i, "");
@@ -1041,11 +1041,11 @@ export class ControlPanels {
     if (this.hwConnected) {
       const latest = status.latest;
       this.hwStatus.textContent =
-        `Connected to ${status.port} — ${status.frames} samples` +
+        `Connected to ${status.port}, ${status.frames} samples` +
         (latest && latest.rpm != null ? ` · latest rpm ${latest.rpm}` : "") +
-        ". Overlay “hardware-live” in compare mode.";
+        ". Overlay 'hardware-live' in compare mode.";
     } else if (status.error) {
-      this.hwStatus.textContent = `Disconnected — last error: ${status.error}`;
+      this.hwStatus.textContent = `Disconnected. Last error: ${status.error}`;
     }
   }
 
@@ -1077,7 +1077,7 @@ export class ControlPanels {
       });
       const dur = frames[frames.length - 1].t - frames[0].t;
       const label = el("span", "run-name",
-        `${name} — ${dur.toFixed(1)} s (imported log)`);
+        `${name}, ${dur.toFixed(1)} s (imported log)`);
       const del = el("button", "", "×");
       del.title = "Remove imported log";
       del.addEventListener("click", () => {
@@ -1102,7 +1102,7 @@ export class ControlPanels {
       });
       const label = el("span", "run-name",
         `${run.name}${run.bench && run.bench !== "A" ? ` · bench ${run.bench}` : ""}` +
-        ` — ${run.duration.toFixed(1)} s` +
+        `, ${run.duration.toFixed(1)} s` +
         (run.complete ? "" : " (recording)"));
       const rep = el("button", "", "▶");
       rep.title = "Replay this run through the 3D scene and gauges";
@@ -1149,7 +1149,7 @@ export class ControlPanels {
     this.syncCtl(state.ctl);
   }
 
-  // ctl echo: every telemetry frame — only touch DOM on change
+  // ctl echo: every telemetry frame, but only touch DOM on change
   syncCtl(ctl) {
     const prev = this._lastCtl;
     this._lastCtl = ctl;
@@ -1205,7 +1205,7 @@ export class ControlPanels {
         btn.classList.toggle("active", +btn.dataset.scale === ctl.time_scale));
     if (prev.recording !== ctl.recording) {
       this.btnRecord.textContent = ctl.recording
-        ? `Stop recording “${ctl.recording}”` : "Start recording";
+        ? `Stop recording "${ctl.recording}"` : "Start recording";
       this.btnRecord.classList.toggle("armed", !!ctl.recording);
     }
     if (prev.load?.kind !== ctl.load?.kind && !busy(this.loadSelect)) {
@@ -1238,14 +1238,14 @@ export class ControlPanels {
       this.pidStatus.textContent =
         `Output: ${pid.output.toFixed(2)} V (${pid.mode} mode)`;
     } else if (prevPid) {
-      this.pidStatus.textContent = "Controller off — the throttle is open-loop.";
+      this.pidStatus.textContent = "Controller off. The throttle is open-loop.";
     }
 
     if (prev.scenario !== ctl.scenario) {
       if (ctl.scenario) {
-        this.scriptStatus.textContent = `Running “${ctl.scenario}”…`;
+        this.scriptStatus.textContent = `Running "${ctl.scenario}"`;
       } else if (prev.scenario) {
-        this.scriptStatus.textContent = `“${prev.scenario}” finished.`;
+        this.scriptStatus.textContent = `"${prev.scenario}" finished.`;
       }
     }
   }

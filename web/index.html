@@ -3,9 +3,55 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Motor Test Bench</title>
+
+<title>Motor Simulator - Interactive DC, BLDC, Stepper and AC Motor Test Bench</title>
+<meta name="description" content="A free interactive electric motor simulator. Drive DC, BLDC, stepper and AC induction motors in 3D, attach mechanical loads, tune a PID controller, and watch live current, torque, speed and temperature. Physics runs on a C++ engine.">
+
+<!-- Every visitor gets their own ?room=, so point search engines at the
+     bare URL instead of letting them index thousands of identical pages. -->
+<link rel="canonical" href="https://motorsimulator.app/">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563eb">
+<meta name="author" content="Vibodh Ayyapureddi">
+
+<!-- Link previews on social platforms and chat apps -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Motor Simulator">
+<meta property="og:url" content="https://motorsimulator.app/">
+<meta property="og:title" content="Motor Simulator - Interactive Motor Test Bench">
+<meta property="og:description" content="Drive DC, BLDC, stepper and AC motors in 3D. Attach loads, push them to stall and overheat, tune a PID controller, and watch the physics live.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Motor Simulator - Interactive Motor Test Bench">
+<meta name="twitter:description" content="Drive DC, BLDC, stepper and AC motors in 3D and watch the physics live.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Motor Simulator",
+  "url": "https://motorsimulator.app/",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any (web browser)",
+  "author": { "@type": "Person", "name": "Vibodh Ayyapureddi" },
+  "description": "Interactive electric motor simulator with a C++ physics engine. Supports DC, BLDC, stepper and AC induction motors, mechanical loads, thermal and fault modelling, and PID control.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
 <link rel="stylesheet" href="/vendor/uPlot.min.css">
 <link rel="stylesheet" href="/src/styles.css">
+
+<!-- Without these the browser discovers the big modules one at a time:
+     it must parse three.module.js before it learns three.core.js exists,
+     and so on. That waterfall was costing seconds. Preloading lets all of
+     them download in parallel from the first request. -->
+<link rel="modulepreload" href="/src/main.js">
+<link rel="modulepreload" href="/src/net/socket.js">
+<link rel="modulepreload" href="/vendor/three.module.js">
+<link rel="modulepreload" href="/vendor/three.core.js">
+<link rel="modulepreload" href="/vendor/uPlot.esm.js">
+<link rel="modulepreload" href="/vendor/OrbitControls.js">
+<link rel="modulepreload" href="/vendor/GLTFLoader.js">
 <script type="importmap">
 {
   "imports": {
@@ -22,20 +68,23 @@
 </head>
 <body>
 <header id="topbar">
-  <div class="brand">Motor Test Bench</div>
+  <div class="brand">
+    Motor Test Bench
+    <span class="byline">by Vibodh Ayyapureddi</span>
+  </div>
   <div class="btn-group" id="bench-group" title="Which bench the controls address">
     <button data-bench="A" class="active">A</button>
     <button data-bench="B">B</button>
   </div>
   <label class="dual-toggle" title="Show both benches at once">
-    <input type="checkbox" id="dual-mode"> both
+    <input type="checkbox" id="dual-mode" checked> both
   </label>
   <select id="preset-select" title="Load a motor preset" aria-label="Motor preset"></select>
   <button id="btn-diff" class="icon-btn" title="Compare two presets" aria-label="Compare two presets">Diff</button>
   <div class="chips">
-    <span id="chip-backend" class="chip" title="Physics backend">—</span>
+    <span id="chip-backend" class="chip" title="Physics backend">-</span>
     <span id="chip-rt" class="chip" title="Real-time factor">1.00× real time</span>
-    <span id="chip-conn" class="chip bad" title="Connection">Offline</span>
+    <span id="chip-conn" class="chip" title="Connection">Connecting...</span>
   </div>
   <div class="spacer"></div>
   <div id="warning-lights" role="status" aria-live="polite" aria-label="Motor warnings"></div>

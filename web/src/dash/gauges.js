@@ -110,7 +110,7 @@ export class Dashboard {
       cell.className = "power-cell";
       const val = document.createElement("span");
       val.className = "power-val";
-      val.textContent = "—";
+      val.textContent = "-";
       const lab = document.createElement("span");
       lab.className = "power-label";
       lab.textContent = label;
@@ -174,7 +174,7 @@ export class Dashboard {
     switch (key) {
       case "rpm": {
         const west = (V - I * r) / ke;
-        return { title: "Speed — voltage balance", lines: [
+        return { title: "Speed: voltage balance", lines: [
           "ω = (V − I·R) / Ke",
           `ω = (${n(V, 2)} − ${n(I, 2)} × ${n(r)}) / ${n(ke)} = ${n(west, 1)} rad/s`,
           `= ${n(west * 60 / (2 * Math.PI), 0)} RPM`,
@@ -182,20 +182,20 @@ export class Dashboard {
           "back-EMF Ke·ω; at steady state they balance exactly." ] };
       }
       case "current":
-        return { title: "Current — Ohm's law with back-EMF", lines: [
+        return { title: "Current: Ohm's law with back-EMF", lines: [
           "I = (V − Ke·ω) / R",
           `I = (${n(V, 2)} − ${n(ke)} × ${n(w, 1)}) / ${n(r)} = ${n((V - ke * w) / r, 2)} A`,
           "At standstill (ω = 0) this is the full inrush V/R; back-EMF " +
           "chokes it off as speed builds." ] };
       case "torque":
-        return { title: "Torque — motor constant", lines: [
+        return { title: "Torque: motor constant", lines: [
           "τ = Kt · I",
           `τ = ${n(kt)} × ${n(I, 2)} = ${n(kt * I, 4)} N·m`,
-          "Torque is directly proportional to winding current — which is " +
+          "Torque is directly proportional to winding current, which is " +
           "why the current limit is also a torque limit." ] };
       case "temp": {
         const heat = I * I * r;
-        return { title: "Winding temperature — lumped thermal model", lines: [
+        return { title: "Winding temperature: lumped thermal model", lines: [
           "C·dT/dt = I²R − (T − T_amb)/R_th",
           `heating I²R = ${n(I, 2)}² × ${n(r)} = ${n(heat, 2)} W`,
           `cooling (T − T_amb)/R_th = (${n(f.temperature, 1)} − ${n(f.ctl.ambient_c, 0)})/R_th`,
@@ -211,7 +211,7 @@ export class Dashboard {
       case "load": {
         const kind = f.ctl.load.kind, prm = f.ctl.load.params || {};
         const forms = {
-          none: ["τ_load = 0", "Free shaft — only internal friction opposes."],
+          none: ["τ_load = 0", "Free shaft. Only internal friction opposes."],
           constant: [`τ_load = ${n(prm.torque ?? 0)} N·m (fixed)`,
             "Speed-independent opposing torque, like a friction brake."],
           viscous: ["τ = c·ω",
@@ -222,11 +222,11 @@ export class Dashboard {
           pump: ["τ = a + b·ω²",
             `= ${n(prm.static_torque ?? 0)} + ${n(prm.coefficient ?? 0)}·ω² = ${n(f.load_torque, 4)} N·m`],
           wheel: ["τ = n·(Crr·m·g·r + ½ρ·CdA·v²·r),  v = n·ω·r",
-            `now ${n(f.load_torque, 4)} N·m — rolling resistance plus aero drag, reflected through the gearing.`],
+            `now ${n(f.load_torque, 4)} N·m, from rolling resistance plus aero drag through the gearing.`],
           flywheel: ["τ ≈ c_bearing·ω  (inertia dominates)",
-            `J_extra = ½·m·r² — huge stored energy, tiny steady drag.`],
+            `J_extra = ½·m·r². Large stored energy, very little steady drag.`],
         };
-        return { title: `Load — ${kind}`, lines: forms[kind] || ["τ_load"] };
+        return { title: `Load: ${kind}`, lines: forms[kind] || ["τ_load"] };
       }
     }
     return null;
@@ -267,10 +267,10 @@ export class Dashboard {
     this.powerCells.p_out.textContent = watts(frame.p_out ?? 0);
     this.powerCells.p_loss.textContent = watts(Math.max(0, (frame.p_in ?? 0) - (frame.p_out ?? 0)));
     this.powerCells.eff.textContent = frame.efficiency > 0
-      ? `${(frame.efficiency * 100).toFixed(0)} %` : "—";
+      ? `${(frame.efficiency * 100).toFixed(0)} %` : "-";
     const batt = frame.battery;
     this.powerCells.batt.textContent = batt
-      ? `${Math.round(batt.soc * 100)}% · ${batt.voltage.toFixed(1)} V` : "—";
+      ? `${Math.round(batt.soc * 100)}% · ${batt.voltage.toFixed(1)} V` : "-";
     this.powerCells.batt.title = batt && batt.energy_recovered_wh > 0
       ? `${batt.energy_recovered_wh.toFixed(2)} Wh recovered by regen braking` : "";
     // refresh screen-reader labels about once a second, not per frame

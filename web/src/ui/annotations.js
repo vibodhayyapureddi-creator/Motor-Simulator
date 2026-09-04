@@ -12,39 +12,39 @@
 const NOTES = {
   overcurrent: {
     title: "Current limiter engaged",
-    text: "The winding current hit the configured ceiling, so the drive is " +
-          "folding back its output voltage — exactly how a real controller " +
-          "protects itself. Torque is capped along with the current.",
+    text: "Winding current reached the configured ceiling, so the drive is " +
+          "reducing its output voltage to hold it there. Torque is capped " +
+          "along with the current.",
   },
   stall: {
     title: "Stall",
-    text: "The load needs more torque than the motor can make, so the shaft " +
-          "has stopped while full drive is still applied. With no back-EMF " +
-          "opposing it, current heads toward V/R and everything turns to heat.",
+    text: "The load needs more torque than the motor can produce, so the " +
+          "shaft has stopped with full drive still applied. With no rotation " +
+          "there is no back-EMF, so current rises toward V/R and the winding " +
+          "heats fast.",
   },
   sag: {
     title: "Supply voltage sag",
-    text: "The bus voltage just dropped. Less voltage means less current and " +
-          "torque, so speed falls until the back-EMF matches the weaker " +
-          "supply — watch it recover as the bus comes back.",
+    text: "Bus voltage dropped. Less voltage means less current and less " +
+          "torque, so speed falls until the back-EMF matches the lower " +
+          "supply. It recovers when the bus does.",
   },
   overheat: {
     title: "Winding overheating",
-    text: "I²R losses are heating the winding faster than it can shed heat " +
-          "to ambient. If resistance feedback is on, copper's resistance " +
-          "rises with temperature and the motor visibly derates.",
+    text: "I squared R losses are adding heat faster than the motor sheds it " +
+          "to ambient. With resistance feedback enabled, copper resistance " +
+          "climbs with temperature and the motor loses output.",
   },
   pwm: {
     title: "PWM drive",
-    text: "The controller is now chopping the full bus voltage on and off. " +
-          "Mean voltage = duty × bus, and the winding inductance turns the " +
-          "chopping into a current ripple — drop to 0.02× time to see it.",
+    text: "The controller is switching the full bus voltage on and off. Mean " +
+          "voltage is duty times bus, and the winding inductance turns the " +
+          "switching into current ripple. Slow the time scale to see it.",
   },
   inrush: {
     title: "Inrush current",
     text: "At standstill there is no back-EMF, so the winding briefly draws " +
-          "near its locked-rotor current. It decays as speed (and back-EMF) " +
-          "builds. Slow motion makes this spike easy to watch.",
+          "close to its locked-rotor current. It falls away as speed builds.",
   },
 };
 
@@ -109,28 +109,28 @@ export class Annotations {
 
 const TOUR_STEPS = [
   { sel: "#preset-select", title: "Presets",
-    text: "Start from a real-world motor: gearmotor, drill, drone BLDC, PC " +
-          "fan or e-bike hub. Loading one sets the motor, load, limits and " +
-          "thermal model together." },
+    text: "Seven motors with parameters from real spec sheets. Loading one " +
+          "sets the motor, its load, current limit and thermal model at " +
+          "once." },
   { sel: "#bench-group", title: "Two benches",
-    text: "A and B are fully independent simulations. Pick which one the " +
-          "controls address here, and tick “both” to see them side by side " +
-          "— handy for DC vs BLDC or before/after a parameter change." },
+    text: "A and B are separate simulations. Choose which one the controls " +
+          "affect here, or tick both to run them side by side and compare." },
   { sel: "#tabs", title: "Controls",
-    text: "Drive (voltage or PWM, live parameters), mechanical loads, " +
-          "faults and limits, time control (slow motion!), scripted " +
-          "scenarios, and run recording all live in these tabs." },
+    text: "Drive settings and live motor parameters, mechanical loads, " +
+          "faults and limits, time control, scripted scenarios, and run " +
+          "recording." },
   { sel: "#dash-panel", title: "Instruments",
-    text: "Live gauges plus electrical power in, mechanical power out, " +
-          "losses and efficiency. Ranges rescale to the motor you load." },
+    text: "Gauges plus electrical power in, mechanical power out, losses " +
+          "and efficiency. The ranges rescale to whichever motor is " +
+          "loaded." },
   { sel: "#charts-panel", title: "Telemetry",
-    text: "Scrolling charts of speed, current (with the per-frame peak), " +
-          "torque and winding temperature. Compare mode overlays recorded " +
-          "runs; dual mode overlays bench B." },
+    text: "Speed, current, torque and winding temperature over time. " +
+          "Compare mode overlays recorded runs, and dual mode overlays " +
+          "bench B." },
   { sel: "#scene-panel", title: "The motor",
-    text: "Drag to orbit, scroll to zoom. The housing glows with heat, " +
-          "copper pulses with current, the attached load spins on the " +
-          "shaft, and a BLDC lights up its commutation sector." },
+    text: "Drag to orbit, scroll to zoom. The housing glows as the winding " +
+          "heats, the copper pulses with current, and a BLDC shows which " +
+          "commutation sector is active." },
 ];
 
 export class Tour {
@@ -173,7 +173,7 @@ export class Tour {
     this.card.innerHTML = "";
     const title = document.createElement("div");
     title.className = "tour-title";
-    title.textContent = `${i + 1}/${TOUR_STEPS.length} — ${step.title}`;
+    title.textContent = `${i + 1}/${TOUR_STEPS.length}  ${step.title}`;
     const body = document.createElement("p");
     body.textContent = step.text;
     const row = document.createElement("div");

@@ -6,7 +6,7 @@
 // Voices:
 //  - whine: sawtooth through a low-pass, pitch ~ rotation frequency × a
 //    "blade pass" multiple, loudness rises with speed
-//  - hum:   50–120 Hz triangle, loudness follows load torque + current
+//  - hum:   50 to 120 Hz triangle, loudness follows load torque + current
 //  - grind: filtered noise burst while stalled/jammed
 
 export class MotorSound {

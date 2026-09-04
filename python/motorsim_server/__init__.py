@@ -1,5 +1,7 @@
 """Interactive real-time motor simulator server.
 
+Developed by Vibodh Ayyapureddi.
+
 Run it with:
 
     cd python

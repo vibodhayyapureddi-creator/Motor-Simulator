@@ -65,6 +65,13 @@ _CONTENT_TYPES = {
     ".ico": "image/x-icon",
     ".glb": "model/gltf-binary",
     ".md": "text/markdown; charset=utf-8",
+    # Crawlers require the right type for these or they ignore the file.
+    ".xml": "application/xml; charset=utf-8",
+    ".txt": "text/plain; charset=utf-8",
+    ".webmanifest": "application/manifest+json",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
 }
 
 _QUEUE_LIMIT = 180  # ~3 s of telemetry backlog before a client starts dropping
@@ -77,6 +84,16 @@ _AUTOSAVE_S = 20
 _MAX_ROOMS = 32
 
 _MAX_BODY_BYTES = 1 << 20   # 1 MiB cap on any JSON request body
+
+# What a brand-new room starts with, so a first-time visitor lands on
+# something already running rather than two blank benches. B is the drone
+# BLDC, whose preset carries a propeller load, giving an immediate
+# side-by-side contrast: a geared brushed motor against a loaded
+# brushless one.
+DEFAULT_BENCH_PRESETS = {
+    "A": "builtin:hobby_gearmotor_12v",
+    "B": "builtin:drone_bldc_3s",
+}
 
 HW_RUN_NAME = "hardware-live"
 
@@ -123,7 +140,7 @@ class _WSClient:
 class Room:
     """One isolated pair of benches + run recorder."""
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, presets: Optional[PresetService] = None):
         self.name = name
         self.recorder = Recorder()
         self.sessions: Dict[str, SimulationSession] = {
@@ -131,6 +148,20 @@ class Room:
             "B": SimulationSession(self.recorder, "B"),
         }
         self.last_seen = time.time()
+        if presets is not None:
+            self._seed(presets)
+
+    def _seed(self, presets: PresetService) -> None:
+        """Give a new room a sensible starting pair of motors.
+
+        Queued as commands, so they apply on the session's first tick
+        whether or not the loop is running yet.
+        """
+        for bench, preset_id in DEFAULT_BENCH_PRESETS.items():
+            preset = presets.get(preset_id)
+            session = self.sessions.get(bench)
+            if preset is not None and session is not None:
+                session.apply_preset(preset)
 
     def touch(self) -> None:
         self.last_seen = time.time()
@@ -191,7 +222,7 @@ class MotorSimServer(ThreadingHTTPServer):
                     raise ValueError(
                         f"room limit reached ({_MAX_ROOMS} active); "
                         "close an existing room and retry")
-                room = Room(name)
+                room = Room(name, self.presets)
                 self.rooms[name] = room
                 if self._started:
                     room.start()
